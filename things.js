@@ -7,7 +7,7 @@ import { directions } from './world'
 
 const Wall = stampit({
   refs: {
-    name: 'wall',
+    species: 'wall',
     image: '=',
     walkable: false,
   },
@@ -74,7 +74,7 @@ const Animal = stampit({
       for (const target of world.view(vector)) {
         const thing = world.get(target)
 
-        if (thing && this.diet.includes(thing.name)) {
+        if (thing && this.diet.includes(thing.species)) {
           world.remove(target)
           this.energy += thing.energy
           return true
@@ -97,7 +97,7 @@ const Animal = stampit({
 
       const predators = view.filter(target => {
         const thing = world.get(target)
-        return thing && thing.diet && thing.diet.includes(this.name)
+        return thing && thing.diet && thing.diet.includes(this.species)
       })
 
       if (predators.length) {
@@ -168,7 +168,7 @@ const Herd = stampit({
 
       const flock = view.filter(target => {
         const thing = world.get(target)
-        return thing && this.name === thing.name
+        return thing && this.species === thing.species
       })
 
       if (flock.length) {
@@ -194,7 +194,7 @@ const Hunt = stampit({
 
       const prey = view.filter(target => {
         const thing = world.get(target)
-        return thing && this.diet.includes(thing.name)
+        return thing && this.diet.includes(thing.species)
       })
 
       if (prey.length) {
