@@ -37,24 +37,27 @@ function parseAnimal(config) {
 }
 
 function parseOrganisms(config) {
-  const things = {}
+  const organisms = {}
 
   forOwn(config, (settings, name) => {
     switch (settings.type) {
-      case "plant":
-        things[name] = parsePlant(settings)
+      case 'plant':
+        organisms[name] = parsePlant(settings)
         break
-      case "animal":
-        things[name] = parseAnimal(settings)
+      case 'animal':
+        organisms[name] = parseAnimal(settings)
         break
+      default:
+        throw new Error(
+          `Invalid type "${settings.type}" for organism "${name}"`)
     }
   })
 
-  return things
+  return organisms
 }
 
 function parseWorld(config) {
-  const entities = parseOrganisms(config.things)
+  const entities = parseOrganisms(config.organisms)
   entities.Wall = things.Wall
 
   const legend = new Map(

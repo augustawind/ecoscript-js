@@ -18,7 +18,7 @@ const Organism = stampit({
     walkable: false,
   },
 
-  init({ stamp, args }) {
+  init({ stamp }) {
     this.another = stamp
 
     let energy = this.baseEnergy
@@ -102,7 +102,7 @@ const Animal = stampit({
         this.dir = vector.minus(closest).dir()
         return this.go(world, vector)
       }
-      
+
       return false
     },
 
