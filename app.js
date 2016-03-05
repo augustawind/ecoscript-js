@@ -25,7 +25,7 @@ function animateWorld(world) {
 
 window.onload = () => {
   const xhr = new XMLHttpRequest()
-  const url = 'defaultConfig.json'
+  const url = 'example.json'
 
   xhr.onload = () => {
     const json = JSON.parse(xhr.responseText)
