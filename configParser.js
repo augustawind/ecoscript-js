@@ -37,29 +37,31 @@ function parseAnimal(config) {
 }
 
 function parseOrganisms(config) {
-  const organisms = Object.create(null)
+  const things = {}
 
-  forOwn(config.plants, (val, key) => {
-    organisms[key] = parsePlant(val)
+  forOwn(config, (settings, name) => {
+    switch (settings.type) {
+      case "plant":
+        things[name] = parsePlant(settings)
+        break
+      case "animal":
+        things[name] = parseAnimal(settings)
+        break
+    }
   })
 
-  forOwn(config.animals, (val, key) => {
-    organisms[key] = parseAnimal(val)
-  })
-
-  return organisms
+  return things
 }
 
 function parseWorld(config) {
-  const organisms = parseOrganisms(config)
+  const entities = parseOrganisms(config.things)
+  entities.Wall = things.Wall
 
   const legend = new Map(
     config.world.legend.map(([key, val]) => {
-      return [key, organisms[val]]
+      return [key, entities[val]]
     })
   )
-
-  legend.set('=', things.Wall)
 
   return World.fromLegend(legend, config.world.map)
 }
