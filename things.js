@@ -17,6 +17,7 @@ const Organism = stampit({
   refs: {
     walkable: false,
   },
+
   init({ stamp, args }) {
     this.another = stamp
     let energy = this.baseEnergy
@@ -32,6 +33,7 @@ const Organism = stampit({
       }
     })
   },
+
   methods: {
     reproduce(world, vector) {
       if (this.energy < this.maxEnergy) return false
@@ -59,10 +61,14 @@ const Plant = stampit({
         this.grow(world, vector)
       )
     },
-  }
+  },
 }).compose(Organism)
 
 const Animal = stampit({
+  init() {
+    this.dir = this.dir || sample(directions)
+  },
+
   methods: {
     eat(world, vector) {
       for (const target of world.view(vector)) {
@@ -86,8 +92,26 @@ const Animal = stampit({
       return true
     },
 
+    avoidPredators(world, vector) {
+      const view = world.view(vector, this.senseRadius)
+
+      const predators = view.filter(target => {
+        const thing = world.get(target)
+        return thing && thing.diet && thing.diet.includes(this.name)
+      })
+
+      if (predators.length) {
+        const closest = closestTo(vector, predators)
+        this.dir = vector.minus(closest).dir()
+        return this.go(world, vector)
+      }
+      
+      return false
+    },
+
     preAct(world, vector) {
       return (
+        this.avoidPredators(world, vector) ||
         this.reproduce(world, vector) ||
         this.metabolize(world, vector)
       )
@@ -96,10 +120,6 @@ const Animal = stampit({
 }).compose(Organism)
 
 const Go = stampit({
-  init() {
-    this.dir = this.dir || sample(directions)
-  },
-
   methods: {
     go(world, vector) {
       let dest = vector.plus(this.dir)
@@ -124,8 +144,9 @@ const Wander = stampit({
       const dest = sample(world.viewWalkable(vector))
       if (!dest) return false
 
-      world.move(vector, dest)
+      this.dir = dest.minus(vector)
       this.energy -= this.movementCost
+      world.move(vector, dest)
       return true
     },
   },
