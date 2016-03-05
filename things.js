@@ -20,11 +20,8 @@ const Organism = stampit({
 
   init({ stamp, args }) {
     this.another = stamp
-    let energy = this.baseEnergy
 
-    if (args[0] && 'energy' in args[0]) {
-      energy = args[0].energy
-    }
+    let energy = this.baseEnergy
 
     Reflect.defineProperty(this, 'energy', {
       get: () => energy,
