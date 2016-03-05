@@ -73,7 +73,7 @@ const Animal = stampit({
 
         if (thing && this.diet.includes(thing.species)) {
           world.remove(target)
-          this.energy += thing.energy
+          this.energy += Math.min(thing.energy, thing.baseEnergy)
           return true
         }
       }
