@@ -67,7 +67,7 @@ const directions = [
 class World {
 
   constructor(things) {
-    this._things = [...things]
+    this._things = things.map(row => [...row])
     this._height = this._things.length
     this._width = this._things[0].length
 
@@ -125,12 +125,10 @@ class World {
     grid[to.y][to.x] = null
     this._easystar.setGrid(grid)
 
-    let path = null
+    let path = []
     this._easystar.findPath(from.x, from.y, to.x, to.y, coords => {
       if (coords && coords.length) {
         path = coords.map(p => new Vector(p.x, p.y)).slice(1, -1)
-      } else {
-        path = []
       }
     })
 
