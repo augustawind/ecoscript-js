@@ -42,6 +42,10 @@ const Organism = stampit({
       world.set(target, this.another())
       return true
     },
+
+    pass() {
+      return false
+    },
   },
 })
 
@@ -196,7 +200,11 @@ const Hunt = stampit({
 
       if (prey.length) {
         const closest = closestTo(vector, prey)
-        this.dir = closest.minus(vector).dir()
+        const path = world.findPath(vector, closest)
+
+        if (path.length) {
+          this.dir = path[0].minus(vector)
+        }
       }
 
       return this.go(world, vector)

@@ -1,3 +1,5 @@
+import EasyStar from 'easystarjs'
+
 import flatten from 'lodash/flatten'
 import inRange from 'lodash/inRange'
 import map from 'lodash/map'
@@ -72,6 +74,12 @@ class World {
     if (things.some(row => row.length !== this.width)) {
       throw Error('Width/height do not match things array')
     }
+
+    this._easystar = new EasyStar.js()
+    this._easystar.setAcceptableTiles([null])
+    this._easystar.enableDiagonals()
+    this._easystar.enableCornerCutting()
+    this._easystar.enableSync()
   }
 
   static fromLegend(legend, keysArray) {
@@ -110,6 +118,24 @@ class World {
         thing.energy = random(thing.baseEnergy, thing.maxEnergy)
       }
     }
+  }
+
+  findPath(from, to) {
+    const grid = this._things.map(row => [...row])
+    grid[to.y][to.x] = null
+    this._easystar.setGrid(grid)
+
+    let path = null
+    this._easystar.findPath(from.x, from.y, to.x, to.y, coords => {
+      if (coords && coords.length) {
+        path = coords.map(p => new Vector(p.x, p.y)).slice(1)
+      } else {
+        path = []
+      }
+    })
+
+    this._easystar.calculate()
+    return path 
   }
 
   get width() {
