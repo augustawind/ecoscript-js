@@ -1,4 +1,5 @@
 import forOwn from 'lodash/forOwn'
+import get from 'lodash/get'
 import upperFirst from 'lodash/upperFirst'
 import stampit from 'stampit'
 
@@ -12,8 +13,8 @@ function parsePlant(config) {
 }
 
 function parseAnimal(config) {
-  const strategy = config.actions.move.strategy
-  const condition = config.actions.move.condition || 'false'
+  const strategy = get(config, 'actions.move.strategy') || 'go'
+  const condition = get(config, 'actions.move.condition') || 'false'
 
   const mixins = [
     things.Animal,
