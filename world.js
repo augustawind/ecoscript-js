@@ -1,3 +1,4 @@
+import flatten from 'lodash/flatten'
 import inRange from 'lodash/inRange'
 import map from 'lodash/map'
 import random from 'lodash/random'
@@ -85,28 +86,30 @@ class World {
     )
   }
 
+  toString() {
+    return this.things.map(row => {
+      return row.map(thing => {
+        return thing ? thing.image : ' '
+      }).join('')
+    }).join('\n')
+  }
+
   enumerate() {
-    const things = []
-    for (const [y, row] of this.things.entries()) {
-      for (const [x, thing] of row.entries()) {
-        things.push([new Vector(x, y), thing])
-      }
-    }
-    return things
+    return flatten(
+      this._things.map((row, y) => {
+        return row.map((thing, x) => {
+          return { vector: new Vector(x, y), thing }
+        })
+      })
+    )
   }
 
   randomize() {
-    for (const [_, thing] of this.enumerate()) {
+    for (const { thing } of this.enumerate()) {
       if (thing && 'energy' in thing) {
         thing.energy = random(thing.baseEnergy, thing.maxEnergy)
       }
     }
-  }
-
-  toString() {
-    return this.things.map(row => {
-      return row.map(thing => thing ? thing.image : ' ').join('')
-    }).join('\n')
   }
 
   get width() {
@@ -166,7 +169,7 @@ class World {
 
   inBounds(vector) {
     return inRange(vector.x, 0, this.width) &&
-         inRange(vector.y, 0, this.height)
+           inRange(vector.y, 0, this.height)
   }
 
   isWalkable(vector) {
@@ -179,7 +182,7 @@ class World {
   }
 
   turn() {
-    for (const [vector, thing] of this.enumerate()) {
+    for (const { vector, thing } of this.enumerate()) {
       if (thing) {
         if (thing.hasOwnProperty('energy') && thing.energy <= 0) {
           this.remove(vector)
