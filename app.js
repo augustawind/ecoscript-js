@@ -13,8 +13,7 @@ function randomizeWorld(world) {
 function animateWorld(world) {
   const doc = window.document
 
-  const canvas = doc.createElement('pre')
-  doc.body.appendChild(canvas)
+  const canvas = doc.querySelector('#ecosystem')
 
   const step = () => {
     canvas.innerHTML = world.toString()
