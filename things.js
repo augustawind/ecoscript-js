@@ -174,12 +174,10 @@ const Herd = stampit({
 
       if (flock.length) {
         const closest = closestTo(vector, flock)
-        const distance = closest.minus(vector)
-        const dir = distance.dir()
+        const path = world.findPath(vector, closest)
 
-        // if closest flock member is not adjacent, go towards it
-        if (!isEqual(distance, dir)) {
-          this.dir = dir
+        if (path.length) {
+          this.dir = path[0].minus(vector)
         }
       }
 
