@@ -1,5 +1,6 @@
 import inRange from 'lodash/inRange'
 import map from 'lodash/map'
+import random from 'lodash/random'
 import range from 'lodash/range'
 
 function toDirection(n) {
@@ -92,6 +93,14 @@ class World {
       }
     }
     return things
+  }
+
+  randomize() {
+    for (const [_, thing] of this.enumerate()) {
+      if (thing && 'energy' in thing) {
+        thing.energy = random(thing.baseEnergy, thing.maxEnergy)
+      }
+    }
   }
 
   toString() {

@@ -1,36 +1,26 @@
-import random from 'lodash/random'
-
 import parseWorld from './configParser'
 
-function randomizeWorld(world) {
-  for (const [_, thing] of world.enumerate()) {
-    if (thing && 'energy' in thing) {
-      thing.energy = random(thing.baseEnergy, thing.maxEnergy)
-    }
-  }
-}
-
-function animateWorld(world) {
-  const doc = window.document
-
-  const canvas = doc.querySelector('#ecosystem')
-
+function animateWorld(world, canvas) {
   const step = () => {
     canvas.innerHTML = world.toString()
     world.turn()
   }
+
   window.setInterval(step, 500)
 }
 
 window.onload = () => {
+  const canvas = window.document.querySelector('#ecosystem')
+  if (!canvas) return
+
   const xhr = new XMLHttpRequest()
   const url = 'example.json'
 
   xhr.onload = () => {
     const json = JSON.parse(xhr.responseText)
     const world = parseWorld(json)
-    randomizeWorld(world)
-    animateWorld(world)
+    world.randomize()
+    animateWorld(world, canvas)
   }
 
   xhr.onerror = () => {
