@@ -65,10 +65,6 @@ const Plant = stampit({
 }).compose(Organism)
 
 const Animal = stampit({
-  init() {
-    this.dir = this.dir || sample(directions)
-  },
-
   methods: {
     eat(world, vector) {
       for (const target of world.view(vector)) {
@@ -120,6 +116,10 @@ const Animal = stampit({
 }).compose(Organism)
 
 const Go = stampit({
+  init() {
+    this.dir = this.dir || sample(directions)
+  },
+
   methods: {
     go(world, vector) {
       let dest = vector.plus(this.dir)
