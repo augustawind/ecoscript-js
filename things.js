@@ -1,5 +1,4 @@
 import clamp from 'lodash/clamp'
-import isEqual from 'lodash/isEqual'
 import sample from 'lodash/sample'
 import stampit from 'stampit'
 
@@ -178,10 +177,11 @@ const Herd = stampit({
 
         if (path.length) {
           this.dir = path[0].minus(vector)
+          return this.go(world, vector)
         }
       }
 
-      return this.go(world, vector)
+      return false
     }
   }
 }).compose(Go)
@@ -202,10 +202,11 @@ const Hunt = stampit({
 
         if (path.length) {
           this.dir = path[0].minus(vector)
+          return this.go(world, vector)
         }
       }
 
-      return this.go(world, vector)
+      return false
     },
   },
 }).compose(Go)

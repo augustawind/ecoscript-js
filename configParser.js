@@ -1,64 +1,36 @@
-import forOwn from 'lodash/forOwn'
 import get from 'lodash/get'
+import mapValues from 'lodash/mapValues'
+import some from 'lodash/some'
 import upperFirst from 'lodash/upperFirst'
+
 import stampit from 'stampit'
 
 import World from './world'
 import things from './things'
 
-function parsePlant(config) {
-  return stampit({
-    refs: config.properties,
-  }).compose(things.Plant)
-}
+function parseOrganism(config) {
+  const behaviors = get(config, 'actions') || ['go']
 
-function parseAnimal(config) {
-  const strategy = get(config, 'actions.move.strategy') || 'go'
-  const condition = get(config, 'actions.move.condition') || 'false'
+  const mixins = behaviors
+    .concat(config.type)
+    .map(str => things[upperFirst(str)])
 
-  const mixins = [
-    things.Animal,
-    things[upperFirst(strategy)],
-  ]
+  const actions = ['eat'].concat(behaviors)
 
   return stampit({
     refs: config.properties,
 
     methods: {
       act(world, vector) {
-        return (
-          this.eat(world, vector) ||
-          eval(condition) ||
-          this[strategy](world, vector)
-        )
+        return some(actions, action => this[action](world, vector))
       }
     }
 
   }).compose(...mixins)
 }
 
-function parseOrganisms(config) {
-  const organisms = {}
-
-  forOwn(config, (settings, name) => {
-    switch (settings.type) {
-      case 'plant':
-        organisms[name] = parsePlant(settings)
-        break
-      case 'animal':
-        organisms[name] = parseAnimal(settings)
-        break
-      default:
-        throw new Error(
-          `Invalid type "${settings.type}" for organism "${name}"`)
-    }
-  })
-
-  return organisms
-}
-
 function parseWorld(config) {
-  const entities = parseOrganisms(config.organisms)
+  const entities = mapValues(config.organisms, parseOrganism)
   entities.Wall = things.Wall
 
   const legend = new Map(
