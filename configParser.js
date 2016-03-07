@@ -29,7 +29,7 @@ function parseOrganism(config) {
   }).compose(...mixins)
 }
 
-function parseWorld(config) {
+function parseConfig(config) {
   const entities = mapValues(config.organisms, parseOrganism)
   entities.Wall = things.Wall
 
@@ -39,7 +39,10 @@ function parseWorld(config) {
     })
   )
 
-  return World.fromLegend(legend, config.world.map)
+  return {
+    timeout: config.app.timeout,
+    world: World.fromLegend(legend, config.world.map),
+  }
 }
 
-export { parseWorld as default }
+export { parseConfig as default }

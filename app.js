@@ -1,12 +1,12 @@
-import parseWorld from './configParser'
+import parseConfig from './configParser'
 
-function animateWorld(world, canvas) {
+function animateWorld(world, canvas, timeout) {
   const step = () => {
     canvas.innerHTML = world.toString()
     world.turn()
   }
 
-  window.setInterval(step, 500)
+  window.setInterval(step, timeout)
 }
 
 window.onload = () => {
@@ -18,9 +18,9 @@ window.onload = () => {
 
   xhr.onload = () => {
     const json = JSON.parse(xhr.responseText)
-    const world = parseWorld(json)
+    const { timeout, world } = parseConfig(json)
     world.randomize()
-    animateWorld(world, canvas)
+    animateWorld(world, canvas, timeout)
   }
 
   xhr.onerror = () => {
