@@ -65,23 +65,16 @@ const Organism = stampit({
   },
 })
 
-const Plant = stampit({
+const Grow = stampit({
   methods: {
     grow() {
       this.energy += this.growthRate
       return true
     },
-
-    preAct(world, vector) {
-      return (
-        this.reproduce(world, vector) ||
-        this.grow(world, vector)
-      )
-    },
   },
-}).compose(Organism)
+})
 
-const Animal = stampit({
+const Eat = stampit({
   methods: {
     eat(world, vector) {
       for (const target of world.view(vector)) {
@@ -95,7 +88,11 @@ const Animal = stampit({
       }
       return false
     },
+  },
+})
 
+const Metabolize = stampit({
+  methods: {
     metabolize(world, vector) {
       this.energy -= this.metabolism
 
@@ -104,7 +101,11 @@ const Animal = stampit({
       world.remove(vector)
       return true
     },
+  },
+})
 
+const AvoidPredators = stampit({
+  methods: {
     avoidPredators(world, vector) {
       const view = world.view(vector, this.senseRadius)
 
@@ -122,8 +123,10 @@ const Animal = stampit({
           this.dir = dir
         } else {
           const options = world.viewWalkable(vector)
-          const best = furthestFrom(closest, options)
-          this.dir = best.dir()
+          if (options.length) {
+            const best = furthestFrom(closest, options)
+            this.dir = best.dir()
+          }
         }
 
         return this.go(world, vector)
@@ -131,16 +134,8 @@ const Animal = stampit({
 
       return false
     },
-
-    preAct(world, vector) {
-      return (
-        this.avoidPredators(world, vector) ||
-        this.reproduce(world, vector) ||
-        this.metabolize(world, vector)
-      )
-    },
-  }
-}).compose(Organism)
+  },
+})
 
 const Go = stampit({
   init() {
@@ -228,5 +223,28 @@ const Hunt = stampit({
     },
   },
 }).compose(Go)
+
+const Plant = stampit({
+  methods: {
+    preAct(world, vector) {
+      return (
+        this.reproduce(world, vector) ||
+        this.grow(world, vector)
+      )
+    },
+  },
+}).compose(Organism, Grow)
+
+const Animal = stampit({
+  methods: {
+    preAct(world, vector) {
+      return (
+        this.avoidPredators(world, vector) ||
+        this.reproduce(world, vector) ||
+        this.metabolize(world, vector)
+      )
+    },
+  },
+}).compose(Organism, Eat, Metabolize, AvoidPredators)
 
 export default { Wall, Organism, Plant, Animal, Go, Wander, Hunt, Herd }
