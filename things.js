@@ -98,7 +98,17 @@ const Animal = stampit({
 
       if (predators.length) {
         const closest = closestTo(vector, predators)
-        this.dir = vector.minus(closest).dir()
+        const dir = vector.minus(closest).dir()
+        const dest = vector.plus(dir)
+
+        if (world.isWalkable(dest)) {
+          this.dir = dir
+        } else {
+          const options = world.viewWalkable(vector)
+          const best = furthestFrom(closest, options)
+          this.dir = best.dir()
+        }
+
         return this.go(world, vector)
       }
 
@@ -152,13 +162,21 @@ const Wander = stampit({
   },
 })
 
-function closestTo(origin, vectors) {
+function byDistance(origin, vectors, comparison) {
   return vectors.reduce((previous, current) => {
     const previousDistance = previous.minus(origin).map(Math.abs)
     const currentDistance = current.minus(origin).map(Math.abs)
     const result = currentDistance.compare(previousDistance)
-    return result === -1 ? current : previous
+    return result === comparison ? current : previous
   })
+}
+
+function closestTo(origin, vectors) {
+  return byDistance(origin, vectors, -1)
+}
+
+function furthestFrom(origin, vectors) {
+  return byDistance(origin, vectors, 1)
 }
 
 const Herd = stampit({
