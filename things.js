@@ -4,6 +4,23 @@ import stampit from 'stampit'
 
 import { directions } from './world'
 
+function reduceByDistance(origin, vectors, comparison) {
+  return vectors.reduce((previous, current) => {
+    const previousDistance = previous.minus(origin).map(Math.abs)
+    const currentDistance = current.minus(origin).map(Math.abs)
+    const result = currentDistance.compare(previousDistance)
+    return result === comparison ? current : previous
+  })
+}
+
+function closestTo(origin, vectors) {
+  return reduceByDistance(origin, vectors, -1)
+}
+
+function furthestFrom(origin, vectors) {
+  return reduceByDistance(origin, vectors, 1)
+}
+
 const Wall = stampit({
   refs: {
     species: 'wall',
@@ -161,23 +178,6 @@ const Wander = stampit({
     },
   },
 })
-
-function byDistance(origin, vectors, comparison) {
-  return vectors.reduce((previous, current) => {
-    const previousDistance = previous.minus(origin).map(Math.abs)
-    const currentDistance = current.minus(origin).map(Math.abs)
-    const result = currentDistance.compare(previousDistance)
-    return result === comparison ? current : previous
-  })
-}
-
-function closestTo(origin, vectors) {
-  return byDistance(origin, vectors, -1)
-}
-
-function furthestFrom(origin, vectors) {
-  return byDistance(origin, vectors, 1)
-}
 
 const Herd = stampit({
   methods: {
