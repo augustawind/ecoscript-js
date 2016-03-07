@@ -128,7 +128,7 @@ class World {
     let path = []
     this._easystar.findPath(from.x, from.y, to.x, to.y, coords => {
       if (coords && coords.length) {
-        path = coords.map(p => new Vector(p.x, p.y)).slice(1, -1)
+        path = coords.map(p => new Vector(p.x, p.y)).slice(1)
       }
     })
 

@@ -1,4 +1,5 @@
 import clamp from 'lodash/clamp'
+import get from 'lodash/get'
 import sample from 'lodash/sample'
 import stampit from 'stampit'
 
@@ -111,7 +112,8 @@ const AvoidPredators = stampit({
 
       const predators = view.filter(target => {
         const thing = world.get(target)
-        return thing && thing.diet && thing.diet.includes(this.species)
+        const isPredator = get(thing, 'diet', []).includes(this.species)
+        return isPredator && world.findPath(vector, target).length <= this.senseRadius
       })
 
       if (predators.length) {
@@ -188,7 +190,7 @@ const Herd = stampit({
         const closest = closestTo(vector, flock)
         const path = world.findPath(vector, closest)
 
-        if (path.length) {
+        if (path.length > 1) {
           this.dir = path[0].minus(vector)
           return this.go(world, vector)
         }
@@ -213,7 +215,7 @@ const Hunt = stampit({
         const closest = closestTo(vector, prey)
         const path = world.findPath(vector, closest)
 
-        if (path.length) {
+        if (path.length > 1) {
           this.dir = path[0].minus(vector)
           return this.go(world, vector)
         }
