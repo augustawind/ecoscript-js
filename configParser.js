@@ -33,16 +33,9 @@ function parseConfig(config) {
   const entities = mapValues(config.organisms, parseOrganism)
   entities.Wall = things.Wall
 
-  const legend = new Map(
-    config.world.legend.map(([key, val]) => {
-      return [key, entities[val]]
-    })
-  )
+  const legend = mapValues(config.world.legend, val => entities[val])
 
-  return {
-    timeout: config.app.timeout,
-    world: World.fromLegend(legend, config.world.map),
-  }
+  return World.fromLegend(legend, config.world.map)
 }
 
 export { parseConfig as default }

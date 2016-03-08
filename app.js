@@ -1,12 +1,17 @@
+import yaml from 'js-yaml'
+
 import parseConfig from './configParser'
 
-function animateWorld(world, canvas, timeout) {
+const EXAMPLE_URL = 'example.yml'
+const TIMEOUT = 450
+
+function animateWorld(world, canvas) {
   const step = () => {
     canvas.innerHTML = world.toString()
     world.turn()
   }
 
-  window.setInterval(step, timeout)
+  window.setInterval(step, TIMEOUT)
 }
 
 window.onload = () => {
@@ -14,19 +19,18 @@ window.onload = () => {
   if (!canvas) return
 
   const xhr = new XMLHttpRequest()
-  const url = 'example.json'
 
   xhr.onload = () => {
-    const json = JSON.parse(xhr.responseText)
-    const { timeout, world } = parseConfig(json)
+    const config = yaml.safeLoad(xhr.responseText)
+    const world = parseConfig(config)
     world.randomize()
-    animateWorld(world, canvas, timeout)
+    animateWorld(world, canvas)
   }
 
   xhr.onerror = () => {
-    throw new Error(`Failed to load ${url}: ${xhr.status}`)
+    throw new Error(`Failed to load ${EXAMPLE_URL}: ${xhr.status}`)
   }
 
-  xhr.open('get', url, true)
+  xhr.open('get', EXAMPLE_URL, true)
   xhr.send()
 }

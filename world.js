@@ -86,8 +86,8 @@ class World {
     return new World(
       map(keysArray, keys => {
         return map(keys, k => {
-          if (!legend.has(k)) return null
-          const Thing = legend.get(k)
+          if (!legend.hasOwnProperty(k)) return null
+          const Thing = legend[k]
           return Thing()
         })
       })
