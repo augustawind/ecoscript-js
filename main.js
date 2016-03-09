@@ -1,3 +1,4 @@
+import 'babel-polyfill'
 import yaml from 'js-yaml'
 
 import parseConfig from './configParser'
