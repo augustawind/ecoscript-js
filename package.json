@@ -1,42 +1,57 @@
 {
-  "name": "ecos",
+  "name": "ecoscript",
   "version": "0.0.1",
   "description": "Ecosystem simulator",
   "repository": {
     "type": "git",
-    "url": "https://github.com/dustinrohde/ecosystem"
+    "url": "git+https://github.com/dustinrohde/ecosystem.git"
   },
-  "main": "main.js",
+  "main": "dist/main.js",
+  "bin": "./bin/ecoscript.js",
   "directories": {
     "test": "test"
   },
   "author": "Dustin Rohde",
-  "license": "ISC",
+  "license": "GPL-3.0",
   "devDependencies": {
-    "eslint": "2.4.0"
+    "babel-cli": "6.5.1",
+    "babel-plugin-add-module-exports": "0.1.2",
+    "babel-plugin-transform-object-rest-spread": "6.5.0",
+    "babel-preset-es2015": "6.5.0",
+    "eslint": "2.4.0",
+    "rimraf": "2.5.2"
   },
   "dependencies": {
-    "babel-cli": "6.5.1",
-    "babel-plugin-transform-object-rest-spread": "6.5.0",
     "babel-polyfill": "6.5.0",
-    "babel-preset-es2015": "6.5.0",
     "easystarjs": "0.2.3",
     "js-yaml": "3.5.3",
     "lodash": "4.3.0",
+    "minimist": "1.2.0",
     "stampit": "2.1.1"
   },
   "babel": {
     "plugins": [
-      "transform-object-rest-spread"
+      "transform-object-rest-spread",
+      "add-module-exports"
     ],
     "presets": [
       "es2015"
     ]
   },
   "scripts": {
-    "build": "babel src/ -o dist/",
-    "watch": "babel src/ -o dist/ --watch",
-    "prewatch": "npm run build",
-    "lint": "eslint main.js src/*.js"
-  }
+    "clean": "rimraf dist/*",
+    "build": "babel src/ -d dist/ -s true",
+    "watch": "npm run build -- --watch",
+    "lint": "eslint src/*.js"
+  },
+  "bugs": {
+    "url": "https://github.com/dustinrohde/ecosystem/issues"
+  },
+  "homepage": "https://github.com/dustinrohde/ecosystem#readme",
+  "keywords": [
+    "ecosystem",
+    "game",
+    "simulator",
+    "sandbox"
+  ]
 }
