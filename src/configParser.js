@@ -23,8 +23,8 @@ function parseOrganism(config) {
     methods: {
       act(world, vector) {
         return some(actions, action => this[action](world, vector))
-      }
-    }
+      },
+    },
 
   }).compose(...mixins)
 }

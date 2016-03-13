@@ -44,7 +44,7 @@ const Organism = stampit({
       get: () => energy,
       set: (x) => {
         energy = clamp(x, 0, this.maxEnergy)
-      }
+      },
     })
   },
 
@@ -197,8 +197,8 @@ const Herd = stampit({
       }
 
       return false
-    }
-  }
+    },
+  },
 }).compose(Go)
 
 const Hunt = stampit({

@@ -133,7 +133,7 @@ class World {
     })
 
     this._easystar.calculate()
-    return path 
+    return path
   }
 
   get width() {
