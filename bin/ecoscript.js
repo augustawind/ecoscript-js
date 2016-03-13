@@ -30,6 +30,7 @@ const argv = minimist(process.argv.slice(2), {
     delay: 500,
   },
 
+  'alias': { 'i': 'interactive', 'r': 'result', 'd': 'delay' },
   'boolean': 'interactive',
 })
 
