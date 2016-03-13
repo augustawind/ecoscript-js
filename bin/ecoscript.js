@@ -20,7 +20,7 @@ function animate(ecosystem) {
     fail('Invalid argument: "--delay" must be a positive integer')
   }
 
-  return setInterval(() => step(ecosystem), argv.delay)
+  return setInterval(step, argv.delay, ecosystem)
 }
 
 const argv = minimist(process.argv.slice(2), {
