@@ -2,7 +2,6 @@ import get from 'lodash/get'
 import mapValues from 'lodash/mapValues'
 import some from 'lodash/some'
 import upperFirst from 'lodash/upperFirst'
-
 import stampit from 'stampit'
 
 import World from './world'

@@ -1,5 +1,4 @@
 import EasyStar from 'easystarjs'
-
 import flatten from 'lodash/flatten'
 import inRange from 'lodash/inRange'
 import map from 'lodash/map'

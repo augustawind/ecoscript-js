@@ -1,5 +1,4 @@
 import 'babel-polyfill'
-import fs from 'fs'
 import yaml from 'js-yaml'
 
 import parseWorld from './configParser'
