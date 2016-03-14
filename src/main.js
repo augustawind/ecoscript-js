@@ -8,9 +8,9 @@ export default function *ecoscript(text) {
   const config = yaml.safeLoad(text)
   const world = parseWorld(config)
 
-  let stop = false
-  while (!stop) {
+  let done = false
+  while (!done) {
     world.turn()
-    stop = yield world.toString()
+    done = yield world.toString()
   }
 }
