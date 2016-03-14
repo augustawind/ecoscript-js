@@ -114,6 +114,7 @@ module.exports = {
         "no-caller": 2,
         "no-catch-shadow": 2,
         "no-confusing-arrow": 0,
+        "no-constant-condition": 0,
         "no-continue": 2,
         "no-div-regex": 2,
         "no-else-return": 2,

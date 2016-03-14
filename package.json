@@ -4,7 +4,7 @@
   "description": "Simple, YAML-configurable natural ecosystem simulator",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/dustinrohde/ecosystem.git"
+    "url": "git+https://github.com/dustinrohde/ecoscript.git"
   },
   "main": "lib/main.js",
   "bin": "./bin/ecoscript.js",
@@ -47,9 +47,9 @@
     "lint": "eslint src/*.js"
   },
   "bugs": {
-    "url": "https://github.com/dustinrohde/ecosystem/issues"
+    "url": "https://github.com/dustinrohde/ecoscript/issues"
   },
-  "homepage": "https://github.com/dustinrohde/ecosystem#readme",
+  "homepage": "https://github.com/dustinrohde/ecoscript#readme",
   "keywords": [
     "ecosystem",
     "game",
