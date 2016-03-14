@@ -27,7 +27,7 @@ function animate(ecosystem) {
 const argv = minimist(process.argv.slice(2), {
   'default': {
     interactive: false,
-    result: null,
+    result: undefined,
     delay: 500,
   },
 
@@ -41,19 +41,19 @@ if (!argv._.length) {
 
 const filename = argv._[0]
 const text = fs.readFileSync(filename, 'utf8')
-const eco = ecoscript(filename)
+const eco = ecoscript(text)
 
 // Result mode -- dump results after n iterations
-if (argv.result) {
+if (argv.result !== undefined) {
   if (argv.result === true) {
-    argv.result = 1
+    argv.result = 0
   }
 
   else if (!isPositiveInteger(argv.result)) {
     fail('Invalid argument: "--result" must be a positive integer')
   }
 
-  for (let i = 0; i < argv.result - 1; i++) {
+  for (let i = 0; i < argv.result; i++) {
     eco.next()
   }
 
