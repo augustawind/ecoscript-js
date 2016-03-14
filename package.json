@@ -1,12 +1,12 @@
 {
   "name": "ecoscript",
   "version": "0.1.0",
-  "description": "Ecosystem simulator",
+  "description": "Simple, YAML-configurable natural ecosystem simulator",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/dustinrohde/ecosystem.git"
   },
-  "main": "dist/main.js",
+  "main": "lib/main.js",
   "bin": "./bin/ecoscript.js",
   "directories": {
     "test": "test"
@@ -39,9 +39,11 @@
     ]
   },
   "scripts": {
-    "clean": "rimraf dist/*",
-    "build": "babel src/ -d dist/ -s true",
-    "watch": "npm run build -- --watch",
+    "prepublish": "npm run clean && npm run lint && npm run build",
+    "clean": "rimraf lib/*",
+    "build": "babel src/ -d lib/",
+    "build-dev": "npm run build -- --source-maps inline",
+    "watch": "npm run build-dev -- --watch",
     "lint": "eslint src/*.js"
   },
   "bugs": {
@@ -52,6 +54,7 @@
     "ecosystem",
     "game",
     "simulator",
+    "simulation",
     "sandbox"
   ]
 }

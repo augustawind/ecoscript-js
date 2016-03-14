@@ -2,7 +2,7 @@
 'use strict'
 
 const minimist = require('minimist')
-const ecoscript = require('../dist/main.js')
+const ecoscript = require('../lib/main.js')
 
 const isPositiveInteger = (n) => Number.isInteger(n) && n >= 0
 
