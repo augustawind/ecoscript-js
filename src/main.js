@@ -4,8 +4,7 @@ import yaml from 'js-yaml'
 
 import parseWorld from './configParser'
 
-export default function *ecoscript(filename) {
-  const text = fs.readFileSync(filename, 'utf8')
+export default function *ecoscript(text) {
   const config = yaml.safeLoad(text)
   const world = parseWorld(config)
 

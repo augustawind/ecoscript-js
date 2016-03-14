@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 'use strict'
 
+const fs = require('fs')
 const minimist = require('minimist')
 const ecoscript = require('../lib/main.js')
 
@@ -39,6 +40,7 @@ if (!argv._.length) {
 }
 
 const filename = argv._[0]
+const text = fs.readFileSync(filename, 'utf8')
 const eco = ecoscript(filename)
 
 // Result mode -- dump results after n iterations
