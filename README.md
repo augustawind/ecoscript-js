@@ -10,7 +10,7 @@ $ npm install ecoscript
 
 ## Example
 
-See [the example config](https://github.com/dustinrohde/ecoscript/examples/example.yml)
+See [the example config](https://github.com/dustinrohde/ecoscript/blob/master/examples/example.yml)
 
 ## Usage
 
