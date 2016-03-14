@@ -8,6 +8,10 @@ A simple, YAML-configurable natural ecosystem simulator.
 $ npm install ecoscript
 ```
 
+## Example
+
+See [the example config](https://github.com/dustinrohde/ecoscript/examples/example.yml)
+
 ## Usage
 
 ```
@@ -35,4 +39,23 @@ OPTIONS
     -i, --interactive
           Run normally, but allow execution to paused or resumed with the
           Enter key. Start paused.
+```
+
+## API
+
+```js
+const ecoscript = require('ecoscript')
+const fs = require('fs')
+
+const text = fs.readFileSync('myConfig.yml')
+const world = ecoscript(text)
+
+console.log(world.next().value)
+// Output:
+// =========
+// =     w =
+// =    ***=
+// = **    =
+// =  b  **=
+// =========
 ```
