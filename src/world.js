@@ -1,5 +1,6 @@
 import EasyStar from 'easystarjs'
 import flatten from 'lodash/flatten'
+import forOwn from 'lodash/forOwn'
 import inRange from 'lodash/inRange'
 import map from 'lodash/map'
 import random from 'lodash/random'
@@ -82,6 +83,11 @@ class World {
   }
 
   static fromLegend(legend, keysArray) {
+    // Set each thing's `string` property to its key in the map
+    forOwn(legend, (Thing, key) => {
+      Thing.fixed.refs.string = key
+    })
+
     return new World(
       map(keysArray, keys => {
         return map(keys, k => {
@@ -96,7 +102,7 @@ class World {
   toString() {
     return this.things.map(row => {
       return row.map(thing => {
-        return thing ? thing.image : ' '
+        return thing ? thing.string : ' '
       }).join('')
     }).join('\n')
   }

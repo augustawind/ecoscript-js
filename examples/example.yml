@@ -33,7 +33,6 @@ organisms:
         type: plant
         properties:
             species: shrub
-            image: '*'
             baseEnergy: 3
             maxEnergy: 20
             growthRate: 3
@@ -42,7 +41,6 @@ organisms:
         type: animal
         properties:
             species: herbivore
-            image: 'H'
             baseEnergy: 30
             maxEnergy: 80
             movementCost: 0.8
@@ -59,7 +57,6 @@ organisms:
         type: animal
         properties:
             species: predator
-            image: '@'
             baseEnergy: 30
             maxEnergy: 90
             movementCost: 0.8
