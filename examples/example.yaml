@@ -1,0 +1,159 @@
+# This is an example ecoscript configuration file.
+# Config files are written in [YAML](http://www.yaml.org/), but this quick
+# reference should be enough to get you up and running without any prior
+# knowledge
+# ----------------------------------------------------------------------
+# A config file is composed of
+# sections, which can have sub-sections, and so on. Sections are denoted by a
+# section name and a colon followed by the content of that section. Lines
+# beginning with a pound sign (`#`) are ignored. The
+# content of each section MUST be indented, and each line MUST have the same
+# level of indentation. Sub-sections follow the same format, relative to the
+# indentation level of the parent section. Spaces, not tabs, must be used
+# for indentation. Most text editors can be configured so that pressing the
+# tab keys inserts an appropriate number of spaces.
+
+# Config files must begin with three hyphens on a separate line.
+# This signals the start of the document.
+---
+# ## World
+# ----------------------------------------------------------------------
+# The `world` section describes the layout of the world.
+world:
+
+  # The `legend` specifices what each character in the `map` represents (see
+  # `map` below). Each line starts with a text character surrounded by
+  # single quotes, followed by a colon and a space, and then followed by
+  # the name of an organism. The organism names must each correspond with
+  # an organism definition in the `organisms` section below. There is one
+  # exception to this: the `wall` organism is already defined for you, so 
+  # you can just include it in your map.
+  #
+  # In this `legend`,
+  legend:
+      # an *equals sign* represents a wall,
+      '=': wall
+      # an *asterisk* represents a shrub,
+      '*': shrub
+      # the *letter H* represents an herbivore,
+      'H': herbivore
+      # and an *at sign* represents a predator.
+      '@': predator 
+
+  # The `map` specificies the layout of the world as a grid. Each line in the
+  # map represents a row in the grid, and each character in the row represents
+  # an entity in the world. The meaning of each character is specificied in
+  # the `legend`, above. Each row must begin with a hyphen '-' followed by a
+  # space, and the following text must be enclosed in single quotes.
+  map:
+      - '========================='
+      - '=H=         *         =H='
+      - '=H=                   =H='
+      - '=H=                   =H='
+      - '= =                   = ='
+      - '=                       ='
+      - '=                       ='
+      - '=                       ='
+      - '=           H           ='
+      - '=           H           ='
+      - '=   **     ===     **   ='
+      - '=  ****    =@=    ****  ='
+      - '= = **     = =     **  *='
+      - '= =       == =        **='
+      - '= ==    === ==      ****='
+      - '= =======  ==***  ******='
+      - '=         ==************='
+      - '========================='
+
+# ## Organisms
+# ----------------------------------------------------------------------
+# The `organisms` section defines each organism in the world. Each organism 
+# has a `type`, a set of `properties`, and a set of `actions`. The organism's
+# `type` determines which properties can be defined. `type` can be one of
+# `animal` or `plant`.
+#
+# All organisms, regardless of type, must have the following `properties`:
+#
+#   - `species`: The organism's species. This is often the same as the name
+#     of the section in which the organism is being defined, but it
+#     can be anything.
+#   - `baseEnergy`: The amount of energy the organism starts with.
+#   - `maxEnergy`: The maximum energy the organism can have. This is also
+#      amount of energy it needs to reproduce.
+#
+# Plants must also have the following additional `properties`:
+#
+#   - `growthRate`: The amount of energy the plant gains on each turn.
+#
+# Animals must also have the following additional `properties`:
+#
+#   - `movementCost`: The amount of energy expended to move.
+#   - `metabolism`: The amount of energy expended each turn, regardless
+#     of what actions it took.
+#   - `senseRadius`: How many units away the animal can sense other organisms.
+#   - `diet`: A list of `species` that the animal can eat.
+#
+# In addition, each organism can optionally be given a sequence of actions.
+# I won't go into too much detail just yet because this feature is undergoing
+# maintenance, but essentially the way it works is this:
+#
+# 1. Actions are defined in a sequence.
+# 2. When its the organism's turn to act, each action is executed in order
+#    until one succeeds. Thus, only one action is executed per turn.
+# 3. Each organism has a default set of actions that it runs through before
+#    the actions defined here. If one of those succeeds, the actions here
+#    are never executed. For more information on default actions, go
+#    [here](world.html) and read the comments on `World#turn`.
+
+#
+organisms:
+
+    # This section defines an organism called `shrub`.
+    shrub:
+        # The `shrub` is a `type` of `plant`.
+        type: plant
+        # It has the following `properties`:
+        properties:
+            species: shrub
+            baseEnergy: 3
+            maxEnergy: 20
+            growthRate: 3
+
+    # This section defines an organism called `herbivore`
+    herbivore:
+        # The `herbivore` is a `type` of `animal`.
+        type: animal
+        # It has the following `properties`:
+        properties:
+            species: herbivore
+            baseEnergy: 30
+            maxEnergy: 80
+            movementCost: 0.8
+            metabolism: 0.2
+            senseRadius: 5
+            diet:
+                - shrub
+        # It has the following `actions`:
+        actions:
+            - hunt
+            - herd
+            - go
+
+    # This section defines an organism called `predator`
+    predator:
+        # The `predator` is a `type` of `animal`.
+        type: animal
+        # It has the following `properties`:
+        properties:
+            species: predator
+            baseEnergy: 30
+            maxEnergy: 90
+            movementCost: 0.8
+            metabolism: 0.2
+            senseRadius: 5
+            diet:
+                - herbivore
+        # It has the following `actions`:
+        actions:
+            - hunt
+            - go

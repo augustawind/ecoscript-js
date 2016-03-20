@@ -102,8 +102,8 @@ class World {
 
   // Create a new `World` from a legend and a map.
   //
-  // `legend` maps characters to object constructors, and
-  // `map` is an array of strings. Each character
+  // `legend` is an object that maps characters to object constructors, and
+  // `worldMap` is an array of strings. Each character
   //  in the map must correspond with entries in the `legend`. Example:
   //    
   //     const legend = {
@@ -113,7 +113,7 @@ class World {
   //       'y': Plant,
   //     }
   //
-  //     const keysArray = [
+  //     const worldMap = [
   //       '=====',
   //       '= h =',
   //       '=yy =',
@@ -123,14 +123,14 @@ class World {
   //
   // Spaces are mapped to `null`, which is represents empty space
   // in the world.
-  static fromLegend(legend, map) {
+  static fromLegend(legend, worldMap) {
     // Set each thing's `string` property (for use with `World.toString`)
     forOwn(legend, (Thing, key) => {
       Thing.fixed.refs.string = key
     })
 
     return new World(
-      map(keysArray, keys => {
+      map(worldMap, keys => {
         return map(keys, k => {
           if (k === ' ') return null
           const Thing = legend[k]
@@ -272,10 +272,10 @@ class World {
 
   // Iterate over each thing in the world and do the following:
   // 
-  // - If it has a property called `energy` and it is at or below `0`,
+  // 1. If it has a property called `energy` and it is at or below `0`,
   //   remove the thing from the world. Otherwise:
-  // - If it has a method called `preAct`, call it.
-  // - If `preAct` returned `false`, see if it has a method called `act`.
+  // 2. If it has a method called `preAct`, call it.
+  // 3. If `preAct` returned `false`, see if it has a method called `act`.
   //   If it does, call it.
   //
   // This is the world's main loop, and we'll call each invocation of this

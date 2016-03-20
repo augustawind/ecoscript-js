@@ -30,7 +30,7 @@ function parseOrganism(config) {
 
 function parseConfig(config) {
   const entities = mapValues(config.organisms, parseOrganism)
-  entities.Wall = things.Wall
+  entities.wall = things.Wall
   const legend = mapValues(config.world.legend, val => entities[val])
   const world = World.fromLegend(legend, config.world.map)
   world.randomize()
