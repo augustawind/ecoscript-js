@@ -26,15 +26,10 @@ const Wall = stampit({
   refs: {
     species: 'wall',
     image: '=',
-    walkable: false,
   },
 })
 
 const Organism = stampit({
-  refs: {
-    walkable: false,
-  },
-
   init({ stamp }) {
     this.another = stamp
 
@@ -105,6 +100,43 @@ const Metabolize = stampit({
   },
 })
 
+const Wander = stampit({
+  methods: {
+    wander(world, vector) {
+      const dest = sample(world.viewWalkable(vector))
+      if (!dest) return false
+
+      this.dir = dest.minus(vector)
+      this.energy -= this.movementCost
+      world.move(vector, dest)
+      return true
+    },
+  },
+})
+
+const Go = stampit({
+  init() {
+    this.dir = this.dir || sample(directions)
+  },
+
+  methods: {
+    go(world, vector) {
+      let dest = vector.plus(this.dir)
+
+      if (!world.isWalkable(dest)) {
+        dest = sample(world.viewWalkable(vector))
+        if (!dest) return false
+
+        this.dir = dest.minus(vector)
+      }
+
+      world.move(vector, dest)
+      this.energy -= this.movementCost
+      return true
+    },
+  },
+})
+
 const AvoidPredators = stampit({
   methods: {
     avoidPredators(world, vector) {
@@ -137,44 +169,7 @@ const AvoidPredators = stampit({
       return false
     },
   },
-})
-
-const Go = stampit({
-  init() {
-    this.dir = this.dir || sample(directions)
-  },
-
-  methods: {
-    go(world, vector) {
-      let dest = vector.plus(this.dir)
-
-      if (!world.isWalkable(dest)) {
-        dest = sample(world.viewWalkable(vector))
-        if (!dest) return false
-
-        this.dir = dest.minus(vector)
-      }
-
-      world.move(vector, dest)
-      this.energy -= this.movementCost
-      return true
-    },
-  },
-})
-
-const Wander = stampit({
-  methods: {
-    wander(world, vector) {
-      const dest = sample(world.viewWalkable(vector))
-      if (!dest) return false
-
-      this.dir = dest.minus(vector)
-      this.energy -= this.movementCost
-      world.move(vector, dest)
-      return true
-    },
-  },
-})
+}).compose(Go)
 
 const Herd = stampit({
   methods: {

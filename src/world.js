@@ -196,12 +196,7 @@ class World {
   }
 
   isWalkable(vector) {
-    if (this.inBounds(vector)) {
-      const thing = this.get(vector)
-      return !thing || thing.walkable
-    }
-
-    return false
+    return this.inBounds(vector) && !this.get(vector)
   }
 
   turn() {
