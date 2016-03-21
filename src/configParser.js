@@ -14,14 +14,12 @@ function parseOrganism(config) {
     .concat(config.type)
     .map(str => things[upperFirst(str)])
 
-  const actions = ['eat'].concat(behaviors)
-
   return stampit({
     refs: config.properties,
 
     methods: {
       act(world, vector) {
-        return some(actions, action => this[action](world, vector))
+        return some(behaviors, action => this[action](world, vector))
       },
     },
 

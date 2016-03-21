@@ -5,6 +5,12 @@ import stampit from 'stampit'
 
 import { directions } from './world'
 
+const DEBUG = true
+
+function log() {
+  if (DEBUG) console.log(...arguments)
+}
+
 function reduceByDistance(origin, vectors, comparison) {
   return vectors.reduce((previous, current) => {
     const previousDistance = previous.minus(origin).map(Math.abs)
@@ -50,6 +56,7 @@ const Organism = stampit({
       const target = sample(world.viewWalkable(vector))
       if (!target) return false
 
+      log(`${this.species} is reproducing...`)
       this.energy = this.baseEnergy
       world.set(target, this.another())
       return true
@@ -77,7 +84,7 @@ const Eat = stampit({
         const thing = world.get(target)
 
         if (thing && this.diet.includes(thing.species)) {
-          world.remove(target)
+          world.kill(target)
           this.energy += Math.min(thing.energy, thing.baseEnergy)
           return true
         }

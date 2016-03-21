@@ -87,3 +87,13 @@ test('World#randomize should randomize each thing\'s properties', t => {
   t.ok(changed[1], 'energy prop should not always be at its initial level')
   t.end()
 })
+
+test('World#_view should return all vectors within given distance')
+test('World#viewWalkable')
+test('World#get')
+test('World#set')
+test('World#remove')
+test('World#move')
+test('World#inBounds')
+test('World#isWalkable')
+test('World#turn')

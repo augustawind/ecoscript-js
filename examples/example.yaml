@@ -135,6 +135,7 @@ organisms:
                 - shrub
         # It has the following `actions`:
         actions:
+            - eat
             - hunt
             - herd
             - go
@@ -155,5 +156,7 @@ organisms:
                 - herbivore
         # It has the following `actions`:
         actions:
+            - eat
             - hunt
             - go
+

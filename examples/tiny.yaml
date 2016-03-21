@@ -1,0 +1,37 @@
+---
+world:
+
+  legend:
+    '=': wall
+    'h': herbivore
+    '"': grass
+
+  map:
+    - '======'
+    - '=h " ='
+    - '======'
+
+organisms:
+
+  grass:
+    type: plant
+    properties:
+      species: grass
+      baseEnergy: 19
+      maxEnergy: 20
+      growthRate: 3
+
+  herbivore:
+    type: animal
+    properties:
+      species: herbivore
+      baseEnergy: 5
+      maxEnergy: 10
+      movementCost: 0.5
+      metabolism: 0.1
+      senseRadius: 5
+      diet:
+        - grass
+    actions:
+        - eat
+        - go 

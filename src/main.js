@@ -1,4 +1,5 @@
 import 'babel-polyfill'
+import 'source-map-support/register'
 import yaml from 'js-yaml'
 
 import parseWorld from './configParser'

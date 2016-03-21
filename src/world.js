@@ -248,6 +248,12 @@ class World {
     this.set(vector, null)
   }
 
+  // Like `World.remove` but also sets the thing's `energy` to 0
+  kill(vector) {
+    this.get(vector).energy = 0
+    this.remove(vector)
+  }
+
   // Assign the thing at `vector1` to `vector2` and set `vector1` to `null`.
   move(vector1, vector2) {
     const thing = this.get(vector1)
@@ -287,8 +293,8 @@ class World {
         if (thing.hasOwnProperty('energy') && thing.energy <= 0) {
           this.remove(vector)
         } else if (thing.preAct) {
-          const acted = thing.preAct(this, vector)
-          if (acted === false) thing.act(this, vector)
+          const didAct = thing.preAct(this, vector)
+          if (didAct === false) thing.act(this, vector)
         }
       }
     }
