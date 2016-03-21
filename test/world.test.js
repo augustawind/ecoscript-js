@@ -61,3 +61,29 @@ test('World#enumerate should return every {vector, thing} pair', t => {
   t.deepEqual(pairs.sort(), myPairs.sort())
   t.end()
 })
+
+test('World#randomize should randomize each thing\'s properties', t => {
+  const T = () => {
+    return { energy: 1, baseEnergy: 1, maxEnergy: 10 }
+  }
+  const legend = { '1': T }
+  const map = ['11 ']
+  const world = World.fromLegend(legend, map)
+
+  let changed = [false, false]
+  for (let i = 0; i < 100; i++) {
+    world.randomize()
+
+    const th1 = world.things[0][0]
+    const th2 = world.things[0][1]
+    t.ok(th1.energy >= th1.baseEnergy, 'energy should not be below baseEnergy')
+    t.ok(th2.energy <= th2.maxEnergy, 'energy should not be above maxEnergy')
+
+    if(th1.energy !== 1) changed[0] = true
+    if(th2.energy !== 1) changed[1] = true
+  }
+
+  t.ok(changed[0], 'energy prop should not always be at its initial level')
+  t.ok(changed[1], 'energy prop should not always be at its initial level')
+  t.end()
+})
