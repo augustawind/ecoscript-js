@@ -124,17 +124,13 @@ class World {
   // Spaces are mapped to `null`, which is represents empty space
   // in the world.
   static fromLegend(legend, worldMap) {
-    // Set each thing's `string` property (for use with `World.toString`)
-    forOwn(legend, (Thing, key) => {
-      Thing.fixed.refs.string = key
-    })
-
     return new World(
       map(worldMap, keys => {
         return map(keys, k => {
           if (k === ' ') return null
-          const Thing = legend[k]
-          return Thing()
+          const thing = (legend[k])()
+          thing.string = k
+          return thing
         })
       })
     )
