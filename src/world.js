@@ -6,7 +6,6 @@
 // ---------------------------------------------------------------------
 import EasyStar from 'easystarjs'
 import flatten from 'lodash/flatten'
-import forOwn from 'lodash/forOwn'
 import inRange from 'lodash/inRange'
 import map from 'lodash/map'
 import random from 'lodash/random'
@@ -145,7 +144,7 @@ class World {
       map(worldMap, keys => {
         return map(keys, k => {
           if (k === ' ') return null
-          const thing = (legend[k])()
+          const thing = legend[k]()
           thing.string = k
           return thing
         })
@@ -175,7 +174,6 @@ class World {
 
   // Set the given `Vector` to `null`.
   remove(vector) {
-    const thing = this.get(vector)
     this.set(vector, null)
   }
 
