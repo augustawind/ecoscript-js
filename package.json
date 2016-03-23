@@ -1,6 +1,6 @@
 {
   "name": "ecoscript",
-  "version": "0.2.2",
+  "version": "0.2.3",
   "description": "Simple, YAML-configurable natural ecosystem simulator",
   "repository": {
     "type": "git",
