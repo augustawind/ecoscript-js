@@ -144,7 +144,8 @@ class World {
       map(worldMap, keys => {
         return map(keys, k => {
           if (k === ' ') return null
-          const thing = legend[k]()
+          const Thing = legend[k]
+          const thing = Thing()
           thing.string = k
           return thing
         })
@@ -282,7 +283,7 @@ class World {
   // and `configParser.js` for more information.
   turn() {
     for (const { vector, thing } of this.enumerate()) {
-      if (thing && !thing.hasOwnProperty('energy') || thing.energy > 0) {
+      if (thing && (!thing.hasOwnProperty('energy') || thing.energy > 0)) {
         const hasActed = thing.preAct ? thing.preAct(this, vector) : false
         if (!hasActed && thing.act) thing.act(this, vector)
       }

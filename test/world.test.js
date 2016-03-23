@@ -27,7 +27,7 @@ const setup = () => {
 
 // tests
 
-test('World#fromLegend should create a World from a legend and a map', t => {
+test('World#fromLegend', t => {
   const world = setup()
 
   t.equal(world.things[0][0].num, 1,
@@ -45,12 +45,13 @@ test('World#fromLegend should create a World from a legend and a map', t => {
   t.end()
 })
 
-test('World#toString should display accurate string representation', t => {
+test('World#toString', t => {
   const world = setup()
   const string = '12\n' +
                  ' 1'
 
-  t.equal(world.toString(), string)
+  t.equal(world.toString(), string,
+          'should display accurate string representation')
   t.end()
 })
 
@@ -80,6 +81,27 @@ test('World#remove', t => {
   t.notEqual(world.get(v), null)
   world.remove(v)
   t.equal(world.get(v), null, 'should set the vector to null')
+  t.end()
+})
+
+test('World#kill', t => {
+  const T = () => {
+    return {
+      energy: 2
+    }
+  }
+  const legend = { '1': T }
+  const map = ['11']
+  const world = World.fromLegend(legend, map)
+
+  const v0 = new Vector(0, 0)
+  const t0 = world.get(v0)
+  t.equals(t0.energy, 2)
+  world.kill(v0)
+  t.equals(t0.energy, 0,
+           'should set the thing at the vectors energy to 0')
+  t.equals(world.get(v0), null,
+           'should remove the thing at the vector from the world')
   t.end()
 })
 
@@ -113,7 +135,7 @@ test('World#isWalkable', t => {
   t.end()
 })
 
-test('World#enumerate should return every {vector, thing} pair', t => {
+test('World#enumerate', t => {
   const world = setup()
   const pairs = world.enumerate()
 
@@ -126,7 +148,8 @@ test('World#enumerate should return every {vector, thing} pair', t => {
     }
   }
 
-  t.deepEqual(sortByXY(pairs), sortByXY(myPairs))
+  t.deepEqual(sortByXY(pairs), sortByXY(myPairs),
+             'should return every {vector, thing} pair')
   t.end()
 })
 
@@ -194,7 +217,7 @@ test('World#viewWalkable', t => {
   t.end()
 })
 
-test('World#randomize should randomize each thing\'s properties', t => {
+test('World#randomize', t => {
   const T = () => {
     return { energy: 1, baseEnergy: 1, maxEnergy: 10 }
   }
