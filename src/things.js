@@ -1,10 +1,25 @@
+// This module exports a collection of stamps used to create entities in the
+// world. Stamps are composable factory functions. See
+// <https://github.com/stampit-org/stampit/> for more information.
+//
+// Most of these simply define one method with the same name as the stamp,
+// lowercased. Some of these also define an `init()` method that is called 
+// on instantiation. It is also possible to simply define some properties
+// that are called by reference (see the `Wall` stamp).
+//
+// Methods that are to be used as actions (to be called by `World.turn`) should
+// take two arguments: a `World` object and a `Vector` of its current position.
+// They should return a Boolean value that indicates success or failure,
+// failure indicating that no action was taken. See the
+// [`World.turn` annotations](world.html).
+
 import get from 'lodash/get'
 import sample from 'lodash/sample'
 import stampit from 'stampit'
 
 import { directions } from './world'
 
-
+// Helper functions
 function reduceByDistance(origin, vectors, comparison) {
   return vectors.reduce((previous, current) => {
     const previousDistance = previous.minus(origin).map(Math.abs)
@@ -21,7 +36,11 @@ function closestTo(origin, vectors) {
 function furthestFrom(origin, vectors) {
   return reduceByDistance(origin, vectors, 1)
 }
+// ---------------------------------------------------------------------
 
+// Increase this thing's `energy` by its `growthRate`.
+// Always returns `true`.
+// `energy` and `growthRate` must be numbers.
 export const Grow = stampit({
   methods: {
     grow() {
@@ -31,6 +50,11 @@ export const Grow = stampit({
   },
 })
 
+// Find a thing adjacent to this one whose `species` is in this thing's `diet`,
+// then remove it from the world and increase this thing's `energy` by the
+// the eaten's `energy` or `baseEnergy`, whichever is higher.
+// Returns `true` if it ate something, else `false`.
+// `energy` must be a number, and `diet` must be an array of strings.
 export const Eat = stampit({
   methods: {
     eat(world, origin) {
@@ -38,7 +62,6 @@ export const Eat = stampit({
         const thing = world.get(target)
 
         if (thing && this.diet.includes(thing.species)) {
-          debugger;
           this.energy += Math.max(thing.energy, thing.baseEnergy)
           world.kill(target)
           return true
@@ -49,6 +72,10 @@ export const Eat = stampit({
   },
 })
 
+// Decrease this thing's `energy` by its `metabolism`, then if its `energy`
+// is less than `0`, remove it from the world.
+// Returns `false` if it didn't die, else `true`.
+// `energy` and `metabolism` must be numbers.
 export const Metabolize = stampit({
   methods: {
     metabolize(world, origin) {
@@ -57,20 +84,6 @@ export const Metabolize = stampit({
       if (this.energy > 0) return false
 
       world.remove(origin)
-      return true
-    },
-  },
-})
-
-export const Wander = stampit({
-  methods: {
-    wander(world, origin) {
-      const dest = sample(world.viewWalkable(origin))
-      if (!dest) return false
-
-      this.dir = dest.minus(origin)
-      this.energy -= this.movementCost
-      world.move(origin, dest)
       return true
     },
   },
@@ -98,6 +111,23 @@ export const Go = stampit({
     },
   },
 })
+
+// Randomly find an adjacent square that is walkable, then set this thing's
+// `dir` to the direction of the target, and call its `go` method, defined in
+// the `Go` stamp.
+// Return `false` if there was no walkable square, else return the result
+// of calling `this.go`.
+export const Wander = stampit({
+  methods: {
+    wander(world, origin) {
+      const dest = sample(world.viewWalkable(origin))
+      if (!dest) return false
+
+      this.dir = dest.minus(origin)
+      return this.go(world, vector)
+    },
+  },
+}).compose(Go)
 
 export const AvoidPredators = stampit({
   methods: {
