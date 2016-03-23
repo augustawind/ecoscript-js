@@ -41,7 +41,7 @@ OPTIONS
           Enter key. Start paused.
 ```
 
-## API
+## JavaScript API
 
 ```js
 const ecoscript = require('ecoscript')
