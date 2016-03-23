@@ -38,63 +38,73 @@ function furthestFrom(origin, vectors) {
 }
 // ---------------------------------------------------------------------
 
-// Increase this thing's `energy` by its `growthRate`.
-// Always returns `true`.
-// `energy` and `growthRate` must be numbers.
-export const Grow = stampit({
-  methods: {
-    grow() {
-      this.energy += this.growthRate
-      return true
-    },
+// A thing that gains energy over time.
+export const Grow = stampit.methods({
+  // Increase this thing's `energy` by its `growthRate`.
+  // `energy` and `growthRate` must be numbers.
+  //
+  // Return `true`.
+  grow() {
+    this.energy += this.growthRate
+    return true
   },
 })
 
-// Find a thing adjacent to this one whose `species` is in this thing's `diet`,
-// then remove it from the world and increase this thing's `energy` by the
-// the eaten's `energy` or `baseEnergy`, whichever is higher.
-// Returns `true` if it ate something, else `false`.
-// `energy` must be a number, and `diet` must be an array of strings.
-export const Eat = stampit({
-  methods: {
-    eat(world, origin) {
-      for (const target of world.view(origin)) {
-        const thing = world.get(target)
+// A thing that eats.
+export const Eat = stampit.methods({
+  // Find a thing adjacent to this one whose `species` is in this thing's
+  // `diet`, then remove it from the world and increase this thing's `energy`
+  // by the the eaten's `energy` or `baseEnergy`, whichever is higher.
+  // `energy` must be a number, and `diet` must be an array of strings.
+  //
+  // Return `true` if it ate something, else `false`.
+  eat(world, origin) {
+    for (const target of world.view(origin)) {
+      const thing = world.get(target)
 
-        if (thing && this.diet.includes(thing.species)) {
-          this.energy += Math.max(thing.energy, thing.baseEnergy)
-          world.kill(target)
-          return true
-        }
+      if (thing && this.diet.includes(thing.species)) {
+        this.energy += Math.max(thing.energy, thing.baseEnergy)
+        world.kill(target)
+        return true
       }
-      return false
-    },
+    }
+    return false
   },
 })
 
-// Decrease this thing's `energy` by its `metabolism`, then if its `energy`
-// is less than `0`, remove it from the world.
-// Returns `false` if it didn't die, else `true`.
-// `energy` and `metabolism` must be numbers.
-export const Metabolize = stampit({
-  methods: {
-    metabolize(world, origin) {
-      this.energy -= this.metabolism
+// A thing that loses energy over time.
+export const Metabolize = stampit.methods({
+  // Decrease this thing's `energy` by its `metabolism`, then if its `energy`
+  // is less than `0`, remove it from the world. `energy` and `metabolism`
+  // must be numbers.
+  //
+  // Return `true` if it died, else `false`.
+  metabolize(world, origin) {
+    this.energy -= this.metabolism
 
-      if (this.energy > 0) return false
+    if (this.energy > 0) return false
 
-      world.remove(origin)
-      return true
-    },
+    world.remove(origin)
+    return true
   },
 })
 
+// A thing that moves in a straight line.
 export const Go = stampit({
+  // Initialize it. If this thing does not already have a direction (`dir`),
+  // set it to a random direction.
   init() {
     this.dir = this.dir || sample(directions)
   },
 
   methods: {
+    // Check the next square in the current direction of movement (`dir`). If
+    // the destination isn't walkable, try to find an adjacent square that is.
+    // If found set `dir` to that direction, decrease `energy` by
+    // `movementCost`, and move to that square. `energy` and `movementCost`
+    // must be numbers. `dir` must be a Vector.
+    //
+    // Return `true` if successfully moved, else `false`.
     go(world, origin) {
       let dest = origin.plus(this.dir)
 
@@ -112,114 +122,109 @@ export const Go = stampit({
   },
 })
 
-// Randomly find an adjacent square that is walkable, then set this thing's
-// `dir` to the direction of the target, and call its `go` method, defined in
-// the `Go` stamp.
-// Return `false` if there was no walkable square, else return the result
-// of calling `this.go`.
-export const Wander = stampit({
-  methods: {
-    wander(world, origin) {
-      const dest = sample(world.viewWalkable(origin))
-      if (!dest) return false
+// A thing that moves randomly each turn.
+export const Wander = stampit.methods({
+  // Randomly find an adjacent square that is walkable, then set this thing's
+  // `dir` to the direction of the target, and call its `go` method, defined in
+  // the `Go` stamp. `dir` must be a `Vector` whose `x` and `y` are between `1`
+  // and `-1`.
+  //
+  // Return `false` if there was no walkable square, else return the result
+  // of calling `this.go`.
+  wander(world, origin) {
+    const dest = sample(world.viewWalkable(origin))
+    if (!dest) return false
 
-      this.dir = dest.minus(origin)
-      return this.go(world, vector)
-    },
+    this.dir = dest.minus(origin)
+    return this.go(world, vector)
   },
 }).compose(Go)
 
-export const AvoidPredators = stampit({
-  methods: {
-    avoidPredators(world, origin) {
-      const view = world.view(origin, this.senseRadius)
+// A thing that avoids predators.
+export const AvoidPredators = stampit.methods({
+  avoidPredators(world, origin) {
+    const view = world.view(origin, this.senseRadius)
 
-      const predators = view.filter(target => {
-        const thing = world.get(target)
-        const isPredator = get(thing, 'diet', []).includes(this.species)
-        return isPredator && world.findPath(origin, target).length <= this.senseRadius
-      })
+    const predators = view.filter(target => {
+      const thing = world.get(target)
+      const isPredator = get(thing, 'diet', []).includes(this.species)
+      return isPredator && world.findPath(origin, target).length <= this.senseRadius
+    })
 
-      if (predators.length) {
-        const closest = closestTo(origin, predators)
-        const dir = origin.minus(closest).dir()
-        const dest = origin.plus(dir)
+    if (predators.length) {
+      const closest = closestTo(origin, predators)
+      const dir = origin.minus(closest).dir()
+      const dest = origin.plus(dir)
 
-        if (world.isWalkable(dest)) {
-          this.dir = dir
-        } else {
-          const options = world.viewWalkable(origin)
-          if (options.length) {
-            const best = furthestFrom(closest, options)
-            this.dir = best.dir()
-          }
+      if (world.isWalkable(dest)) {
+        this.dir = dir
+      } else {
+        const options = world.viewWalkable(origin)
+        if (options.length) {
+          const best = furthestFrom(closest, options)
+          this.dir = best.dir()
         }
+      }
 
+      return this.go(world, origin)
+    }
+
+    return false
+  },
+}).compose(Go)
+
+// A thing that forms groups with similar things.
+export const Herd = stampit.methods({
+  herd(world, origin) {
+    const view = world.view(origin, this.senseRadius)
+
+    const flock = view.filter(target => {
+      const thing = world.get(target)
+      return thing && this.species === thing.species
+    })
+
+    if (flock.length) {
+      const closest = closestTo(origin, flock)
+      const path = world.findPath(origin, closest)
+
+      if (path.length > 1) {
+        this.dir = path[0].minus(origin)
         return this.go(world, origin)
       }
+    }
 
-      return false
-    },
+    return false
   },
 }).compose(Go)
 
-export const Herd = stampit({
-  methods: {
-    herd(world, origin) {
-      const view = world.view(origin, this.senseRadius)
+// A thing that actively searches for food.
+export const Hunt = stampit.methods({
+  hunt(world, origin) {
+    const view = world.view(origin, this.senseRadius)
 
-      const flock = view.filter(target => {
-        const thing = world.get(target)
-        return thing && this.species === thing.species
-      })
+    const prey = view.filter(target => {
+      const thing = world.get(target)
+      return thing && this.diet.includes(thing.species)
+    })
 
-      if (flock.length) {
-        const closest = closestTo(origin, flock)
-        const path = world.findPath(origin, closest)
+    if (prey.length) {
+      const closest = closestTo(origin, prey)
+      const path = world.findPath(origin, closest)
 
-        if (path.length > 1) {
-          this.dir = path[0].minus(origin)
-          return this.go(world, origin)
-        }
+      if (path.length > 1) {
+        this.dir = path[0].minus(origin)
+        return this.go(world, origin)
       }
+    }
 
-      return false
-    },
+    return false
   },
 }).compose(Go)
 
-export const Hunt = stampit({
-  methods: {
-    hunt(world, origin) {
-      const view = world.view(origin, this.senseRadius)
+// A wall.
+export const Wall = stampit.refs({ species: 'wall' })
 
-      const prey = view.filter(target => {
-        const thing = world.get(target)
-        return thing && this.diet.includes(thing.species)
-      })
-
-      if (prey.length) {
-        const closest = closestTo(origin, prey)
-        const path = world.findPath(origin, closest)
-
-        if (path.length > 1) {
-          this.dir = path[0].minus(origin)
-          return this.go(world, origin)
-        }
-      }
-
-      return false
-    },
-  },
-}).compose(Go)
-
-export const Wall = stampit({
-  refs: {
-    species: 'wall',
-    image: '=',
-  },
-})
-
+// A thing that has energy and reproduces.
 export const Organism = stampit({
   init({ stamp }) {
     this.another = stamp
@@ -245,6 +250,7 @@ export const Organism = stampit({
   },
 })
 
+// A plant.
 export const Plant = stampit({
   methods: {
     preAct(world, origin) {
@@ -256,6 +262,7 @@ export const Plant = stampit({
   },
 }).compose(Organism, Grow)
 
+// An animal.
 export const Animal = stampit({
   methods: {
     preAct(world, origin) {
