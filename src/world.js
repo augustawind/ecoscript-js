@@ -6,6 +6,7 @@
 // ---------------------------------------------------------------------
 import EasyStar from 'easystarjs'
 import flatten from 'lodash/flatten'
+import forOwn from 'lodash/forOwn'
 import inRange from 'lodash/inRange'
 import map from 'lodash/map'
 import random from 'lodash/random'
@@ -140,14 +141,20 @@ class World {
   // Spaces are mapped to `null`, which is represents empty space
   // in the world.
   static fromLegend(legend, worldMap) {
+    // Set each thing's `string` property (for use with `World.toString`)
+    forOwn(legend, (constructor, key) => {
+      // If it's a stamp, mutate `fixed.refs`.
+      if (constructor.fixed) constructor.fixed.refs.string = key
+      // Otherwise, mutate its `prototype`.
+      else constructor.prototype.string = key
+    })
+
     return new World(
       map(worldMap, keys => {
         return map(keys, k => {
           if (k === ' ') return null
           const Thing = legend[k]
-          const thing = Thing()
-          thing.string = k
-          return thing
+          return Thing()
         })
       })
     )
