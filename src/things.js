@@ -1,15 +1,9 @@
-import clamp from 'lodash/clamp'
 import get from 'lodash/get'
 import sample from 'lodash/sample'
 import stampit from 'stampit'
 
 import { directions } from './world'
 
-const DEBUG = true
-
-function log() {
-  if (DEBUG) console.log(...arguments)
-}
 
 function reduceByDistance(origin, vectors, comparison) {
   return vectors.reduce((previous, current) => {
@@ -38,15 +32,7 @@ const Wall = stampit({
 const Organism = stampit({
   init({ stamp }) {
     this.another = stamp
-
-    let energy = this.baseEnergy
-
-    Reflect.defineProperty(this, 'energy', {
-      get: () => energy,
-      set: (x) => {
-        energy = clamp(x, 0, this.maxEnergy)
-      },
-    })
+    this.energy = this.baseEnergy
   },
 
   methods: {
@@ -56,7 +42,7 @@ const Organism = stampit({
       const target = sample(world.viewWalkable(vector))
       if (!target) return false
 
-      log(`${this.species} is reproducing...`)
+      debugger;
       this.energy = this.baseEnergy
       world.set(target, this.another())
       return true
@@ -84,8 +70,9 @@ const Eat = stampit({
         const thing = world.get(target)
 
         if (thing && this.diet.includes(thing.species)) {
-          world.kill(target)
+          debugger;
           this.energy += Math.min(thing.energy, thing.baseEnergy)
+          world.kill(target)
           return true
         }
       }

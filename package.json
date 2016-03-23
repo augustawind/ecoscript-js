@@ -23,6 +23,7 @@
     "eslint": "2.4.0",
     "faucet": "0.0.1",
     "rimraf": "2.5.2",
+    "sinon": "1.17.3",
     "tape": "4.5.1"
   },
   "dependencies": {

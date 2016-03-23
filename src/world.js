@@ -47,7 +47,12 @@ class Vector {
 
   // Reduce this `Vector` to a cardinal direction.
   dir() {
-    return new Vector(toDirection(this.x), toDirection(this.y))
+    return this.map(toDirection)
+  }
+
+  // Return true if both `Vector`s have the same coordinates.
+  equals(vector) {
+    return this.x === vector.x && this.y === vector.y
   }
 
   // Apply a function to this `Vector`'s coordinates.
@@ -93,11 +98,23 @@ class World {
     }
 
     // Setup pathfinding.
-    this._easystar = new EasyStar.js()
-    this._easystar.setAcceptableTiles([null])
-    this._easystar.enableDiagonals()
-    this._easystar.enableCornerCutting()
-    this._easystar.enableSync()
+    this._astar = new EasyStar.js()
+    this._astar.setAcceptableTiles([null])
+    this._astar.enableDiagonals()
+    this._astar.enableCornerCutting()
+    this._astar.enableSync()
+  }
+
+  get width() {
+    return this._width
+  }
+
+  get height() {
+    return this._height
+  }
+
+  get things() {
+    return this._things
   }
 
   // Create a new `World` from a legend and a map.
@@ -146,6 +163,47 @@ class World {
     }).join('\n')
   }
 
+  // Return the thing at the given `Vector`.
+  get(vector) {
+    return this.things[vector.y][vector.x]
+  }
+
+  // Assign `thing` to the given `Vector`.
+  set(vector, thing) {
+    this._things[vector.y][vector.x] = thing
+  }
+
+  // Set the given `Vector` to `null`.
+  remove(vector) {
+    const thing = this.get(vector)
+    this.set(vector, null)
+  }
+
+  // Like `World.remove` but also sets the thing's `energy` to 0 to ensure
+  // that its actions are not executed if its turn hasn't passed yet.
+  kill(vector) {
+    this.get(vector).energy = 0
+    this.remove(vector)
+  }
+
+  // Assign the thing at `vector1` to `vector2` and set `vector1` to `null`.
+  move(vector1, vector2) {
+    const thing = this.get(vector1)
+    this.set(vector2, thing)
+    this.remove(vector1)
+  }
+
+  // Return `true` if the given `Vector` is within the bounds of the world.
+  inBounds(vector) {
+    return inRange(vector.x, 0, this.width) &&
+           inRange(vector.y, 0, this.height)
+  }
+
+  // Return `true` if the given `Vector` is in bounds and walkable.
+  isWalkable(vector) {
+    return this.inBounds(vector) && !this.get(vector)
+  }
+
   // Return an array of named `{ vector, thing }` pairs, representing
   // each object in the world and its corresponding position.
   enumerate() {
@@ -156,49 +214,6 @@ class World {
         })
       })
     )
-  }
-
-  // Randomize some of the properties of each thing in the world, within set
-  // limits. This is subject to change, but it effectively creates the
-  // appearance of walking into a preexisting world that's been running for
-  // some amount of time.
-  randomize() {
-    for (const { thing } of this.enumerate()) {
-      if (thing && 'energy' in thing) {
-        thing.energy = random(thing.baseEnergy, thing.maxEnergy)
-      }
-    }
-  }
-
-  // Find the shortest path between `Vector`s `from` and `to`. Returns an array
-  // of `Vector`s for each point on the path, including the destination (`to`)
-  // but excluding the starting point (`from`).
-  findPath(from, to) {
-    const grid = this._things.map(row => [...row])
-    grid[to.y][to.x] = null
-    this._easystar.setGrid(grid)
-
-    let path = []
-    this._easystar.findPath(from.x, from.y, to.x, to.y, coords => {
-      if (coords && coords.length) {
-        path = coords.map(p => new Vector(p.x, p.y)).slice(1)
-      }
-    })
-
-    this._easystar.calculate()
-    return path
-  }
-
-  get width() {
-    return this._width
-  }
-
-  get height() {
-    return this._height
-  }
-
-  get things() {
-    return this._things
   }
 
   // Return an array of all `Vector`s within `distance` of `origin`, where
@@ -233,43 +248,23 @@ class World {
                .filter(v => this.isWalkable(v))
   }
 
-  // Return the thing at the given `Vector`.
-  get(vector) {
-    return this.things[vector.y][vector.x]
-  }
+  // Find the shortest path between `Vector`s `from` and `to`. Returns an array
+  // of `Vector`s for each point on the path, including the destination (`to`)
+  // but excluding the starting point (`from`).
+  findPath(from, to) {
+    const grid = this._things.map(row => [...row])
+    grid[to.y][to.x] = null
+    this._astar.setGrid(grid)
 
-  // Assign `thing` to the given `Vector`.
-  set(vector, thing) {
-    this._things[vector.y][vector.x] = thing
-  }
+    let path = []
+    this._astar.findPath(from.x, from.y, to.x, to.y, coords => {
+      if (coords && coords.length) {
+        path = coords.map(p => new Vector(p.x, p.y)).slice(1)
+      }
+    })
 
-  // Set the given `Vector` to `null`.
-  remove(vector) {
-    this.set(vector, null)
-  }
-
-  // Like `World.remove` but also sets the thing's `energy` to 0
-  kill(vector) {
-    this.get(vector).energy = 0
-    this.remove(vector)
-  }
-
-  // Assign the thing at `vector1` to `vector2` and set `vector1` to `null`.
-  move(vector1, vector2) {
-    const thing = this.get(vector1)
-    this.set(vector2, thing)
-    this.remove(vector1)
-  }
-
-  // Return `true` if the given `Vector` is within the bounds of the world.
-  inBounds(vector) {
-    return inRange(vector.x, 0, this.width) &&
-           inRange(vector.y, 0, this.height)
-  }
-
-  // Return `true` if the given `Vector` is in bounds and walkable.
-  isWalkable(vector) {
-    return this.inBounds(vector) && !this.get(vector)
+    this._astar.calculate()
+    return path
   }
 
   // Iterate over each thing in the world and do the following:
@@ -277,8 +272,8 @@ class World {
   // 1. If it has a property called `energy` and it is at or below `0`,
   //   remove the thing from the world. Otherwise:
   // 2. If it has a method called `preAct`, call it.
-  // 3. If `preAct` returned `false`, see if it has a method called `act`.
-  //   If it does, call it.
+  // 3. If `preAct` returned `false` OR if there was no `preAct` method,
+  //   see if it has a method called `act`. If it does, call it.
   //
   // This is the world's main loop, and we'll call each invocation of this
   // method a *turn*. Every turn, each thing in the world is given one action.
@@ -289,13 +284,21 @@ class World {
   // and `configParser.js` for more information.
   turn() {
     for (const { vector, thing } of this.enumerate()) {
-      if (thing) {
-        if (thing.hasOwnProperty('energy') && thing.energy <= 0) {
-          this.remove(vector)
-        } else if (thing.preAct) {
-          const didAct = thing.preAct(this, vector)
-          if (didAct === false) thing.act(this, vector)
-        }
+      if (thing && !thing.hasOwnProperty('energy') || thing.energy > 0) {
+        const hasActed = thing.preAct ? thing.preAct(this, vector) : false
+        if (!hasActed && thing.act) thing.act(this, vector)
+      }
+    }
+  }
+
+  // Randomize some of the properties of each thing in the world, within set
+  // limits. This is subject to change, but it effectively creates the
+  // appearance of walking into a preexisting world that's been running for
+  // some amount of time.
+  randomize() {
+    for (const { thing } of this.enumerate()) {
+      if (thing && 'energy' in thing) {
+        thing.energy = random(thing.baseEnergy, thing.maxEnergy)
       }
     }
   }
