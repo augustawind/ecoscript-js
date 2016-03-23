@@ -149,8 +149,8 @@ organisms:
             species: predator
             baseEnergy: 30
             maxEnergy: 90
-            movementCost: 0.8
-            metabolism: 0.2
+            movementCost: 1
+            metabolism: 1
             senseRadius: 7
             diet:
                 - herbivore

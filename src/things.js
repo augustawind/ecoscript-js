@@ -72,23 +72,6 @@ export const Eat = stampit.methods({
   },
 })
 
-// A thing that loses energy over time.
-export const Metabolize = stampit.methods({
-  // Decrease this thing's `energy` by its `metabolism`, then if its `energy`
-  // is less than `0`, remove it from the world. `energy` and `metabolism`
-  // must be numbers.
-  //
-  // Return `true` if it survived, else `false`.
-  metabolize(world, origin) {
-    this.energy -= this.metabolism
-
-    if (this.energy > 0) return true
-
-    world.kill(origin)
-    return false
-  },
-})
-
 // A thing that moves in a straight line.
 export const Go = stampit({
   // Initialize it. If this thing does not already have a direction (`dir`),
@@ -228,7 +211,6 @@ export const Wall = stampit.refs({ species: 'wall' })
 export const Organism = stampit({
   init({ stamp }) {
     this.another = stamp
-    this.energy = this.baseEnergy
     let energy = this.baseEnergy
     Reflect.defineProperty(this, 'energy', {
       get() {
@@ -274,15 +256,21 @@ export const Plant = stampit({
 export const Animal = stampit({
   methods: {
     preAct(world, origin) {
+      this.energy -= this.metabolism
+
+      if (this.energy <= 0) {
+        world.kill(origin)
+        return true
+      }
+
       return (
-        this.metabolize(world, origin) && 
+        this.reproduce(world, origin) ||
         this.avoidPredators(world, origin) ||
-        this.eat(world, origin) ||
-        this.reproduce(world, origin)
+        this.eat(world, origin)
       )
     },
   },
-}).compose(Organism, Eat, Metabolize, AvoidPredators)
+}).compose(Organism, Eat, AvoidPredators)
 
-export default { Grow, Eat, Metabolize, Wander, Go, AvoidPredators, Herd,
+export default { Grow, Eat, Wander, Go, AvoidPredators, Herd,
                  Hunt, Wall, Organism, Plant, Animal }

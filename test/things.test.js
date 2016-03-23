@@ -31,7 +31,6 @@ test('things.Eat', t => {
   t.end()
 })
 
-test('things.Metabolize')
 test('things.Wander')
 test('things.Go')
 test('things.AvoidPredators')
