@@ -10,11 +10,11 @@ import { World, Vector } from '../src/world'
 const sortByXY = sortBy(['x', 'y'])
 
 const setup = () => {
-  const T1 = () => {
-    return { num: 1 }
+  function T1() {
+    this.num = 1
   }
-  const T2 = () => {
-    return { num: 2 }
+  function T2() {
+    this.num = 2
   }
   const legend = { '1': T1, '2': T2 }
   const map = [
@@ -85,10 +85,8 @@ test('World#remove', t => {
 })
 
 test('World#kill', t => {
-  const T = () => {
-    return {
-      energy: 2
-    }
+  function T() {
+    this.energy = 2
   }
   const legend = { '1': T }
   const map = ['11']
@@ -218,8 +216,10 @@ test('World#viewWalkable', t => {
 })
 
 test('World#randomize', t => {
-  const T = () => {
-    return { energy: 1, baseEnergy: 1, maxEnergy: 10 }
+  function T() {
+    this.energy = 1
+    this.baseEnergy = 1
+    this.maxEnergy = 10
   }
   const legend = { '1': T }
   const map = ['11 ']
@@ -244,31 +244,26 @@ test('World#randomize', t => {
 })
 
 test('World#turn', t => {
-  const T1 = () => {
-    return {
-      preAct: sinon.stub(),
-      act: sinon.spy()
-    }
+  function T1() {
+    this.energy = 1
+    this.preAct = sinon.stub()
+    this.act  = sinon.spy()
   }
 
-  const T2 = () => {
-    return {
-      preAct: sinon.stub()
-    }
+  function T2() {
+    this.energy = 1
+    this.preAct = sinon.stub()
   }
 
-  const T3 = () => {
-    return {
-      act: sinon.spy()
-    }
+  function T3() {
+    this.energy = 1
+    this.act = sinon.spy()
   }
 
-  const T4 = () => {
-    return {
-      preAct: sinon.stub(),
-      act: sinon.spy(),
-      energy: 0
-    }
+  function T4() {
+    this.energy = 0
+    this.preAct = sinon.stub()
+    this.act = sinon.spy()
   }
 
   const legend = { '1': T1, '2': T1, '3': T2, '4': T3, '5': T4 }

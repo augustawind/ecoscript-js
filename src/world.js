@@ -154,7 +154,8 @@ class World {
         return map(keys, k => {
           if (k === ' ') return null
           const Thing = legend[k]
-          return Thing()
+          // If its a stamp, just call it, else call it with new
+          return Thing.fixed ? Thing() : new Thing()
         })
       })
     )
@@ -290,9 +291,13 @@ class World {
   // and `configParser.js` for more information.
   turn() {
     for (const { vector, thing } of this.enumerate()) {
-      if (thing && (!thing.hasOwnProperty('energy') || thing.energy > 0)) {
-        const hasActed = thing.preAct ? thing.preAct(this, vector) : false
-        if (!hasActed && thing.act) thing.act(this, vector)
+      if (thing && thing.hasOwnProperty('energy')) {
+        if (thing.energy > 0) {
+          const hasActed = thing.preAct ? thing.preAct(this, vector) : false
+          if (!hasActed && thing.act) thing.act(this, vector)
+        } else {
+          this.remove(vector)
+        }
       }
     }
   }

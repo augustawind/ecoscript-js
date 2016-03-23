@@ -9,10 +9,10 @@
 //
 // Methods that are to be used as actions (to be called by `World.turn`) should
 // take two arguments: a `World` object and a `Vector` of its current position.
-// They should return a Boolean value that indicates success or failure,
-// failure indicating that no action was taken. See the
+// They should return a Boolean value that indicates success or failure.
 // [`World.turn` annotations](world.html).
 
+import clamp from 'lodash/clamp'
 import get from 'lodash/get'
 import sample from 'lodash/sample'
 import stampit from 'stampit'
@@ -78,14 +78,14 @@ export const Metabolize = stampit.methods({
   // is less than `0`, remove it from the world. `energy` and `metabolism`
   // must be numbers.
   //
-  // Return `true` if it died, else `false`.
+  // Return `true` if it survived, else `false`.
   metabolize(world, origin) {
     this.energy -= this.metabolism
 
-    if (this.energy > 0) return false
+    if (this.energy > 0) return true
 
-    world.remove(origin)
-    return true
+    world.kill(origin)
+    return false
   },
 })
 
@@ -136,7 +136,7 @@ export const Wander = stampit.methods({
     if (!dest) return false
 
     this.dir = dest.minus(origin)
-    return this.go(world, vector)
+    return this.go(world, origin)
   },
 }).compose(Go)
 
@@ -229,6 +229,15 @@ export const Organism = stampit({
   init({ stamp }) {
     this.another = stamp
     this.energy = this.baseEnergy
+    let energy = this.baseEnergy
+    Reflect.defineProperty(this, 'energy', {
+      get() {
+        return energy
+      },
+      set(value) {
+        energy = clamp(value, 0, this.maxEnergy)
+      },
+    }) 
   },
 
   methods: {
@@ -238,7 +247,6 @@ export const Organism = stampit({
       const target = sample(world.viewWalkable(origin))
       if (!target) return false
 
-      debugger;
       this.energy = this.baseEnergy
       world.set(target, this.another())
       return true
@@ -267,9 +275,10 @@ export const Animal = stampit({
   methods: {
     preAct(world, origin) {
       return (
+        this.metabolize(world, origin) && 
         this.avoidPredators(world, origin) ||
-        this.reproduce(world, origin) ||
-        this.metabolize(world, origin)
+        this.eat(world, origin) ||
+        this.reproduce(world, origin)
       )
     },
   },
