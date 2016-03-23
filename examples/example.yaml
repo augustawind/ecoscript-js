@@ -151,7 +151,7 @@ organisms:
             maxEnergy: 90
             movementCost: 0.8
             metabolism: 0.2
-            senseRadius: 5
+            senseRadius: 7
             diet:
                 - herbivore
         # It has the following `actions`:
