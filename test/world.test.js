@@ -137,17 +137,31 @@ test('World#enumerate', t => {
   const world = setup()
   const pairs = world.enumerate()
 
-  let myPairs = []
-  for (let y = 0; y < 2; y++) {
-    for (let x = 0; x < 2; x++) {
-      const vector = new Vector(x, y)
-      const thing = world.things[y][x]
-      myPairs.push({ vector, thing })
-    }
-  }
+  let myPairs = [
+    { vector: new Vector(0, 0), thing: world.things[0][0] },
+    { vector: new Vector(1, 0), thing: world.things[0][1] },
+    { vector: new Vector(0, 1), thing: null },
+    { vector: new Vector(1, 1), thing: world.things[1][1] },
+  ]
 
   t.deepEqual(sortByXY(pairs), sortByXY(myPairs),
              'should return every {vector, thing} pair')
+  t.end()
+})
+
+test('World#enumerateChars', t => {
+  const world = setup()
+  const pairs = world.enumerateChars()
+
+  let myPairs = [
+    { vector: new Vector(0, 0), chr: world.things[0][0].string },
+    { vector: new Vector(1, 0), chr: world.things[0][1].string },
+    { vector: new Vector(0, 1), chr: ' ' },
+    { vector: new Vector(1, 1), chr: world.things[1][1].string },
+  ]
+
+  t.deepEqual(sortByXY(pairs), sortByXY(myPairs),
+             'should return every {vector, chr} pair')
   t.end()
 })
 
