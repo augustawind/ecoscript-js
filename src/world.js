@@ -231,7 +231,7 @@ class World {
         return row.map((thing, x) => {
           return {
             vector: new Vector(x, y),
-            chr: thing ? thing.string : ' '
+            chr: thing ? thing.string : ' ',
           }
         })
       })
