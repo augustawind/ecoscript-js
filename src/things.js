@@ -211,6 +211,7 @@ export const Wall = stampit.refs({ species: 'wall' })
 export const Organism = stampit({
   init({ stamp }) {
     this.another = stamp
+
     let energy = this.baseEnergy
     Reflect.defineProperty(this, 'energy', {
       get() {

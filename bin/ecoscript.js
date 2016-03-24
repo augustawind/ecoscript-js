@@ -13,7 +13,8 @@ function fail(msg) {
 }
 
 function step(ecosystem) {
-  console.log(ecosystem.next().value)
+  console.log(ecosystem.toString())
+  ecosystem.turn()
 }
 
 function animate(ecosystem) {
@@ -54,10 +55,10 @@ if (argv.result !== undefined) {
   }
 
   for (let i = 0; i < argv.result; i++) {
-    eco.next()
+    eco.turn()
   }
 
-  console.log(eco.next().value)
+  console.log(eco.toString())
 }
 
 // Interactive mode -- allow user to pause/resume execution
