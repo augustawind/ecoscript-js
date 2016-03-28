@@ -223,21 +223,6 @@ class World {
     )
   }
 
-  // Like `enumerate`, but returns string representations of each `thing`
-  // instead of the raw object. 
-  enumerateChars() {
-    return flatten(
-      this._things.map((row, y) => {
-        return row.map((thing, x) => {
-          return {
-            vector: new Vector(x, y),
-            chr: thing ? thing.string : ' ',
-          }
-        })
-      })
-    )
-  }
-
   // Return an array of all `Vector`s within `distance` of `origin`, where
   // `origin` is a `Vector` and `distance` is an integer. Used internally.
   _view(origin, distance) {
